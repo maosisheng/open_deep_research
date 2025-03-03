@@ -91,7 +91,11 @@ def create_agent(model_id="o1"):
     }
     if model_id == "o1":
         model_params["reasoning_effort"] = "high"
-    model = LiteLLMModel(**model_params)
+    model = OpenAIServerModel(
+        model_id="deepseek-ai/deepseek-r1",
+        api_base="https://integrate.api.nvidia.com/v1",  # 替换为实际 API 端点
+        api_key=os.environ.get("OPENAI_API_KEY")           # 确保设置了 API_KEY 环境变量
+    )
 
     text_limit = 100000
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
