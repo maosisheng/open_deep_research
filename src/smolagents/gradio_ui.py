@@ -85,12 +85,31 @@ def pull_messages_from_step(
             ):  # Only yield execution logs if there's actual content
                 log_content = step_log.observations.strip()
                 if log_content:
-                    log_content = re.sub(r"^Execution logs:\s*", "", log_content)
-                    yield gr.ChatMessage(
-                        role="assistant",
-                        content=f"```bash\n{log_content}\n",
-                        metadata={"title": "📝 Execution Logs", "parent_id": parent_id, "status": "done"},
-                    )
+                    # Check if this is a search result with references
+                    if "## Search Results" in log_content:
+                        # Format search results as markdown with clickable links
+                        results = log_content.split("\n")
+                        formatted_results = []
+                        for line in results:
+                            if line.startswith("Source:"):
+                                formatted_results.append(f"*{line}*")
+                            elif "[" in line and "](" in line:
+                                formatted_results.append(line)
+                            else:
+                                formatted_results.append(line)
+                        log_content = "\n".join(formatted_results)
+                        yield gr.ChatMessage(
+                            role="assistant",
+                            content=log_content,
+                            metadata={"title": "🔍 Search Results", "parent_id": parent_id, "status": "done"},
+                        )
+                    else:
+                        log_content = re.sub(r"^Execution logs:\s*", "", log_content)
+                        yield gr.ChatMessage(
+                            role="assistant",
+                            content=f"```bash\n{log_content}\n",
+                            metadata={"title": "📝 Execution Logs", "parent_id": parent_id, "status": "done"},
+                        )
 
             # Nesting any errors under the tool call
             if hasattr(step_log, "error") and step_log.error is not None:
@@ -289,11 +308,11 @@ class GradioUI:
                         [upload_status, file_uploads_log],
                     )
 
-                gr.HTML("<br><br><h4><center>Powered by:</center></h4>")
+                gr.HTML("<br><br><h4><center>Provided by:</center></h4>")
                 with gr.Row():
                     gr.HTML("""<div style="display: flex; align-items: center; gap: 8px; font-family: system-ui, -apple-system, sans-serif;">
             <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/smolagents/mascot_smol.png" style="width: 32px; height: 32px; object-fit: contain;" alt="logo">
-            <a target="_blank" href="https://github.com/huggingface/smolagents"><b>huggingface/smolagents</b></a>
+            <a target="_blank" href="https://github.com/huggingface/smolagents"><b>Moonshoot/Deep_Research_Agent - Powered by Smolgents Framework</b></a>
             </div>""")
 
             # Main chat interface
