@@ -115,7 +115,7 @@ def create_agent(model_id="o1"):
     text_webbrowser_agent = ToolCallingAgent(
         model=model,
         tools=WEB_TOOLS,
-        max_steps=2,
+        max_steps=1,
         verbosity_level=2,
         planning_interval=1,
         name="search_agent",
@@ -134,13 +134,13 @@ def create_agent(model_id="o1"):
     manager_agent = CodeAgent(
         model=model,
         tools=[visualizer, TextInspectorTool(model, text_limit)],
-        max_steps=3,
+        max_steps=1,
         verbosity_level=2,
         additional_authorized_imports=AUTHORIZED_IMPORTS,
         planning_interval=2,
         managed_agents=[text_webbrowser_agent],
-        name="Novelty_Deep_Research_Agent",
-        description="An Moonshoot deep research agent that can search the web and analyze information about your Startup Innovation Score"
+        name="MoonshotAI_Deep_Research",
+        description="An Moonshoot deep research agent that can search the web and analyze information about your startup idea's novelty level and more"
     )
 
     return manager_agent

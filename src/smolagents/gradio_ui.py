@@ -284,7 +284,7 @@ class GradioUI:
             with gr.Sidebar():
                 gr.Markdown(
                     f"# {self.name.replace('_', ' ').capitalize() or 'Agent interface'}"
-                    "\n> This web ui allows you to interact with a `smolagents` agent that can use tools and execute steps to complete tasks."
+                    "\n> This web ui allows you to interact with a MoonshotAI agent that can use tools and execute steps to complete tasks: Powered by Smolgents Framework"
                     + (f"\n\n**Agent description:**\n{self.description}" if self.description else "")
                 )
 
@@ -312,7 +312,7 @@ class GradioUI:
                 with gr.Row():
                     gr.HTML("""<div style="display: flex; align-items: center; gap: 8px; font-family: system-ui, -apple-system, sans-serif;">
             <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/smolagents/mascot_smol.png" style="width: 32px; height: 32px; object-fit: contain;" alt="logo">
-            <a target="_blank" href="https://github.com/huggingface/smolagents"><b>Moonshoot/Deep_Research_Agent - Powered by Smolgents Framework</b></a>
+            <a target="_blank" href="https://github.com/huggingface/smolagents"><b>MoonshotAI</b></a>
             </div>""")
 
             # Main chat interface
