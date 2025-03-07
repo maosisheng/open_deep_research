@@ -24,7 +24,6 @@ from smolagents.memory import MemoryStep
 from smolagents.utils import _is_package_available
 
 
-
 def pull_messages_from_step(
     step_log: MemoryStep,
 ):
@@ -121,7 +120,6 @@ def pull_messages_from_step(
         step_footnote = f"""<span style="color: #bbbbc2; font-size: 12px;">{step_footnote}</span> """
         yield gr.ChatMessage(role="assistant", content=f"{step_footnote}")
         yield gr.ChatMessage(role="assistant", content="-----", metadata={"status": "done"})
-
 
 
 def stream_to_gradio(
@@ -258,16 +256,7 @@ class GradioUI:
     def launch(self, share: bool = True, **kwargs):
         import gradio as gr
 
-        # Custom CSS for teal theme
-        custom_css = """
-        .gradio-container {--primary-500: #20B2AA !important; --primary-600: #199e97 !important;}
-        .dark {--primary-500: #20B2AA !important; --primary-600: #199e97 !important;}
-        button.primary {background-color: #20B2AA !important;}
-        .footer {color: #20B2AA !important;}
-        a {color: #20B2AA !important;}
-        """
-        
-        with gr.Blocks(css=custom_css, fill_height=True) as demo:
+        with gr.Blocks(theme="ocean", fill_height=True) as demo:
             # Add session state to store session-specific data
             session_state = gr.State({})
             stored_messages = gr.State([])
@@ -275,8 +264,8 @@ class GradioUI:
 
             with gr.Sidebar():
                 gr.Markdown(
-                    f"# <span style='color: #20B2AA;'>{self.name.replace('_', ' ').capitalize() or 'Agent interface'}</span>"
-                    "\n> This web ui allows you to interact with a MoonshotAI agent that can use tools and execute steps to complete tasks: Powered by Smolgents Framework"
+                    f"# {self.name.replace('_', ' ').capitalize() or 'Agent interface'}"
+                    "\n> This web ui allows you to interact with a `smolagents` agent that can use tools and execute steps to complete tasks."
                     + (f"\n\n**Agent description:**\n{self.description}" if self.description else "")
                 )
 
@@ -288,7 +277,7 @@ class GradioUI:
                         container=False,
                         placeholder="Enter your prompt here and press Shift+Enter or press the button",
                     )
-                    submit_btn = gr.Button("Submit", variant="primary", elem_classes="teal-button")
+                    submit_btn = gr.Button("Submit", variant="primary")
 
                 # If an upload folder is provided, enable the upload feature
                 if self.file_upload_folder is not None:
@@ -300,11 +289,11 @@ class GradioUI:
                         [upload_status, file_uploads_log],
                     )
 
-                gr.HTML("<br><br><h4 style='color: #20B2AA; text-align: center;'>Provided by:</h4>")
+                gr.HTML("<br><br><h4><center>Powered by:</center></h4>")
                 with gr.Row():
                     gr.HTML("""<div style="display: flex; align-items: center; gap: 8px; font-family: system-ui, -apple-system, sans-serif;">
-            <img src="https://professional-web-03042025.s3.us-east-1.amazonaws.com/moonshotAI/moonshot_logo.png" style="width: 32px; height: 32px; object-fit: contain;" alt="logo">
-            <a target="_blank" href="https://moonshot-ai.surge.sh/" style="color: #20B2AA !important;"><b>MoonshotAI</b></a>
+            <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/smolagents/mascot_smol.png" style="width: 32px; height: 32px; object-fit: contain;" alt="logo">
+            <a target="_blank" href="https://github.com/huggingface/smolagents"><b>huggingface/smolagents</b></a>
             </div>""")
 
             # Main chat interface
@@ -313,7 +302,7 @@ class GradioUI:
                 type="messages",
                 avatar_images=(
                     None,
-                    "https://professional-web-03042025.s3.us-east-1.amazonaws.com/moonshotAI/moonshot_logo.png",
+                    "https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/smolagents/mascot_smol.png",
                 ),
                 resizeable=True,
                 scale=1,
@@ -327,7 +316,7 @@ class GradioUI:
             ).then(self.interact_with_agent, [stored_messages, chatbot, session_state], [chatbot]).then(
                 lambda: (
                     gr.Textbox(
-                        interactive=True, placeholder="Ask your follow up questions to the "
+                        interactive=True, placeholder="Enter your prompt here and press Shift+Enter or the button"
                     ),
                     gr.Button(interactive=True),
                 ),

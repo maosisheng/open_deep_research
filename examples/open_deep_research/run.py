@@ -79,7 +79,7 @@ BROWSER_CONFIG = {
         "headers": {"User-Agent": user_agent},
         "timeout": 300,
     },
-    "serpapi_key": os.getenv("SERPAPI_API_KEY"),
+
 }
 
 os.makedirs(f"./{BROWSER_CONFIG['downloads_folder']}", exist_ok=True)
@@ -103,7 +103,7 @@ def create_agent(model_id="o1"):
     text_limit = 100000
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
     WEB_TOOLS = [
-        GoogleSearchTool(provider="serpapi"),
+        GoogleSearchTool(provider="serper"),
         VisitTool(browser),
         PageUpTool(browser),
         PageDownTool(browser),
@@ -117,7 +117,7 @@ def create_agent(model_id="o1"):
         tools=WEB_TOOLS,
         max_steps=1,
         verbosity_level=2,
-        planning_interval=1,
+        planning_interval=3,
         name="search_agent",
         description="""A team member that will search the internet to answer your question.
     Ask him for all your questions that require browsing the web.
@@ -134,10 +134,10 @@ def create_agent(model_id="o1"):
     manager_agent = CodeAgent(
         model=model,
         tools=[visualizer, TextInspectorTool(model, text_limit)],
-        max_steps=1,
+        max_steps=3,
         verbosity_level=2,
         additional_authorized_imports=AUTHORIZED_IMPORTS,
-        planning_interval=2,
+        planning_interval=5,
         managed_agents=[text_webbrowser_agent],
         name="MoonshotAI_Deep_Research",
         description="An Moonshoot deep research agent that can search the web and analyze information about your startup idea's novelty level and more"

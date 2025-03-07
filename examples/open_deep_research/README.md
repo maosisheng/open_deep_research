@@ -1,3 +1,9 @@
+---
+title: open_deep_research
+app_file: app.py
+sdk: gradio
+sdk_version: 5.20.0
+---
 # Open Deep Research
 
 Welcome to this open replication of [OpenAI's Deep Research](https://openai.com/index/introducing-deep-research/)!
