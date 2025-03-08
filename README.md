@@ -1,3 +1,9 @@
+---
+title: Moonshot_DeepResearch
+app_file: examples/open_deep_research/app.py
+sdk: gradio
+sdk_version: 5.20.1
+---
 <!---
 Copyright 2024 The HuggingFace Team. All rights reserved.
 
