@@ -922,8 +922,8 @@ class OpenAIServerModel(Model):
     def __init__(
         self,
         model_id: str = "deepseek-ai/deepseek-r1",  # Default to DeepSeek-R1
-        api_base: Optional[str] = "https://integrate.api.nvidia.com/v1",  # NVIDIA NIM API endpoint
-        api_key: Optional[str] = "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",  # Your NVIDIA API key
+        api_base: Optional[str] = "",  # NVIDIA NIM API endpoint
+        api_key: Optional[str] =  "",
         organization: Optional[str] | None = None,
         project: Optional[str] | None = None,
         client_kwargs: Optional[Dict[str, Any]] = None,
