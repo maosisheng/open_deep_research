@@ -1,0 +1,19 @@
+name: Deploy to Hugging Face Spaces
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Deploy to HF Spaces
+        uses: huggingface/huggingface-deploy-action@main
+        with:
+          space-name: ${{ env.SPACE_NAME }}
+          title: ${{ env.SPACE_TITLE }}
+          space-type: gradio
+          artifact-path: .
+          package-path: .
+          hf-token: ${{ secrets.HF_TOKEN }}

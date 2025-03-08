@@ -27,7 +27,11 @@ elif chosen_inference == "ollama":
 
 elif chosen_inference == "litellm":
     # For anthropic: change model_id below to 'anthropic/claude-3-5-sonnet-latest'
-    model = LiteLLMModel(model_id="gpt-4o")
+        model = LiteLLMModel(
+        model_id="deepseek/deepseek-chat",  # deepseek-chat
+        api_key= DEEPSEEK_API_KEY,
+        num_ctx=8192
+    )
 
 
 @tool

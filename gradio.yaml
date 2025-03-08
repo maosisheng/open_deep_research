@@ -1,0 +1,3 @@
+app_file: examples/open_deep_research/app.py
+title: Moonshot_DeepResearch
+requirements: examples/open_deep_research/requirements.txt

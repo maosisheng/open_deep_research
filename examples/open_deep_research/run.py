@@ -3,7 +3,7 @@ import os
 import threading
 
 from dotenv import load_dotenv
-from huggingface_hub import login
+#from huggingface_hub import login
 from scripts.text_inspector_tool import TextInspectorTool
 from scripts.text_web_browser import (
     ArchiveSearchTool,
@@ -23,6 +23,8 @@ from smolagents import (
     LiteLLMModel,
     ToolCallingAgent,
 )
+from smolagents.models import OpenAIServerModel
+
 
 
 AUTHORIZED_IMPORTS = [
@@ -52,7 +54,7 @@ AUTHORIZED_IMPORTS = [
     "csv",
 ]
 load_dotenv(override=True)
-login(os.getenv("HF_TOKEN"))
+#login(os.getenv("HF_TOKEN"))
 
 append_answer_lock = threading.Lock()
 
@@ -77,7 +79,7 @@ BROWSER_CONFIG = {
         "headers": {"User-Agent": user_agent},
         "timeout": 300,
     },
-    "serpapi_key": os.getenv("SERPAPI_API_KEY"),
+
 }
 
 os.makedirs(f"./{BROWSER_CONFIG['downloads_folder']}", exist_ok=True)
@@ -91,12 +93,13 @@ def create_agent(model_id="o1"):
     }
     if model_id == "o1":
         model_params["reasoning_effort"] = "high"
-    model = OpenAIServerModel(
-        model_id="deepseek-ai/deepseek-r1",
-        api_base="https://integrate.api.nvidia.com/v1",  # 替换为实际 API 端点
-        api_key=os.environ.get("OPENAI_API_KEY")           # 确保设置了 API_KEY 环境变量
+    model = LiteLLMModel(
+        model_id="deepseek/deepseek-chat",
+        api_key=os.getenv("DEEPSEEK_API_KEY"),
+        temperature=0.2,
+        top_p=0.7,
+        max_tokens=8192
     )
-
     text_limit = 100000
     browser = SimpleTextBrowser(**BROWSER_CONFIG)
     WEB_TOOLS = [
@@ -112,9 +115,9 @@ def create_agent(model_id="o1"):
     text_webbrowser_agent = ToolCallingAgent(
         model=model,
         tools=WEB_TOOLS,
-        max_steps=20,
+        max_steps=1,
         verbosity_level=2,
-        planning_interval=4,
+        planning_interval=3,
         name="search_agent",
         description="""A team member that will search the internet to answer your question.
     Ask him for all your questions that require browsing the web.
@@ -131,11 +134,13 @@ def create_agent(model_id="o1"):
     manager_agent = CodeAgent(
         model=model,
         tools=[visualizer, TextInspectorTool(model, text_limit)],
-        max_steps=12,
+        max_steps=3,
         verbosity_level=2,
         additional_authorized_imports=AUTHORIZED_IMPORTS,
-        planning_interval=4,
+        planning_interval=5,
         managed_agents=[text_webbrowser_agent],
+        name="MoonshotAI_Deep_Research",
+        description="An Moonshoot deep research agent that can search the web and analyze information about your startup idea's novelty level and more"
     )
 
     return manager_agent

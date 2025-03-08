@@ -836,9 +836,9 @@ class LiteLLMModel(Model):
 
     def __init__(
         self,
-        model_id: str = "anthropic/claude-3-5-sonnet-20240620",
-        api_base=None,
-        api_key=None,
+        model_id: str = "deepseek/deepseek-chat",
+        api_base: Optional[str] = None,
+        api_key: Optional[str] = None,
         custom_role_conversions: Optional[Dict[str, str]] = None,
         **kwargs,
     ):
@@ -882,7 +882,7 @@ class LiteLLMModel(Model):
             **kwargs,
         )
 
-        response = litellm.completion(**completion_kwargs)
+        response = litellm.completion(**completion_kwargs, drop_params=True)
 
         self.last_input_token_count = response.usage.prompt_tokens
         self.last_output_token_count = response.usage.completion_tokens
@@ -921,9 +921,9 @@ class OpenAIServerModel(Model):
 
     def __init__(
         self,
-        model_id: str,
-        api_base: Optional[str] = None,
-        api_key: Optional[str] = None,
+        model_id: str = "deepseek-ai/deepseek-r1",  # Default to DeepSeek-R1
+        api_base: Optional[str] = "https://integrate.api.nvidia.com/v1",  # NVIDIA NIM API endpoint
+        api_key: Optional[str] = "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",  # Your NVIDIA API key
         organization: Optional[str] | None = None,
         project: Optional[str] | None = None,
         client_kwargs: Optional[Dict[str, Any]] = None,
@@ -939,6 +939,11 @@ class OpenAIServerModel(Model):
 
         super().__init__(**kwargs)
         self.model_id = model_id
+        
+        # Set default client kwargs if none provided
+        if client_kwargs is None:
+            client_kwargs = {"max_retries": 3}
+            
         self.client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
@@ -954,6 +959,9 @@ class OpenAIServerModel(Model):
         stop_sequences: Optional[List[str]] = None,
         grammar: Optional[str] = None,
         tools_to_call_from: Optional[List[Tool]] = None,
+        temperature: float = 0.6,  # Default temperature for DeepSeek-R1
+        top_p: float = 0.7,  # Default top_p for DeepSeek-R1
+        max_tokens: int = 4096,  # Default max_tokens for DeepSeek-R1
         **kwargs,
     ) -> ChatMessage:
         completion_kwargs = self._prepare_completion_kwargs(
@@ -964,6 +972,9 @@ class OpenAIServerModel(Model):
             model=self.model_id,
             custom_role_conversions=self.custom_role_conversions,
             convert_images_to_image_urls=True,
+            temperature=temperature,
+            top_p=top_p,
+            max_tokens=max_tokens,
             **kwargs,
         )
         response = self.client.chat.completions.create(**completion_kwargs)
